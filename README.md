@@ -1,34 +1,26 @@
-# dekat. — photobooth buat berdua
+# dekat.
 
-Photobooth responsif untuk mengambil empat jepretan dan menggabungkannya menjadi strip kenangan. Dibuat sebagai web statis supaya mudah dipublikasikan dengan GitHub Pages.
+Booth foto sederhana untuk kamu dan pasangan, meski sedang berjauhan.
 
-## Jalankan
+## Cara pakai
 
-- Buka `index.html` lewat server lokal (misalnya ekstensi Live Server). Akses kamera membutuhkan `localhost` atau HTTPS.
-- Pilih frame, izinkan kamera, buat ruang, lalu ambil foto. Hasil dapat diunduh sebagai JPG.
+1. Izinkan akses kamera.
+2. Buat ruang, lalu kirim kode 6 digit ke pasangan.
+3. Pasangan memasukkan kode dan menyalakan kameranya.
+4. Pilih bingkai, tambahkan stiker, lalu ambil foto masing-masing.
+5. Unduh hasil foto gabungan.
 
-## Mengaktifkan ruang LDR dua perangkat
+Kedua kamera tampil bersamaan. Tombol **Ulangi** hanya mengulang foto milik orang yang menekannya.
 
-GitHub Pages hanya menyajikan frontend statis. Agar kode ruang dan foto tersinkron lintas perangkat, siapkan project Supabase:
+## Menjalankan
 
-1. Buat project di Supabase, salin **Project URL** dan **anon/public key**.
-2. Masukkan keduanya di `config.js` (`supabaseUrl` dan `supabaseAnonKey`). Jangan pernah masukkan `service_role` key.
-3. Pastikan Realtime diaktifkan untuk project. Aplikasi menggunakan channel Broadcast publik per kode ruang.
-4. Push file proyek ini ke GitHub, lalu nyalakan **Settings → Pages → Deploy from a branch**.
+Buka situs melalui HTTPS atau `localhost` agar kamera bisa digunakan. Untuk mencoba di komputer, jalankan server lokal seperti ekstensi Live Server, lalu buka alamat yang diberikan.
 
-> Sesi menyimpan jepretan sebagai pesan realtime, bukan objek database; channel publik berarti siapa pun yang mengetahui kode dapat bergabung. Gunakan kode ruang acak hanya dengan pasangan dan hindari foto sensitif. Untuk privasi lebih kuat, implementasikan channel private dengan autentikasi dan storage berakses terbatas.
+## Publikasikan ke GitHub Pages
 
-## Mode lokal
+1. Unggah berkas proyek ke repositori GitHub.
+2. Buka **Settings → Pages**.
+3. Pilih **Deploy from a branch**, lalu pilih branch `main` dan folder `/(root)`.
+4. Simpan. Buka alamat situs yang ditampilkan GitHub Pages.
 
-Tanpa konfigurasi Supabase, tombol ruang bekerja di browser yang sama melalui `sessionStorage`; ini cocok untuk mencoba alur satu perangkat. Mode ini tidak menyinkronkan kode/foto lewat internet.
-
-## Yang tersedia
-
-- Kamera depan/belakang, timer 3/5/10 detik, foto webcam, dan progress.
-- Dua foto (masing-masing satu perangkat) disusun menjadi satu strip.
-- 12 frame warna, opsi upload PNG/WebP/SVG, unduh hasil JPG.
-- Layout mobile-first dan kontrol akses kamera yang tetap di browser.
-
-## Catatan browser
-
-Kamera browser memerlukan secure context (`https://` atau `localhost`) serta izin kamera. Jika izin ditolak, ubah izin situs di pengaturan browser. Lihat [MDN: getUserMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
+Ruang dan koneksi antarperangkat memerlukan konfigurasi Supabase di `config.js`.
