@@ -1,4 +1,4 @@
-# dekat.
+# Dekat
 
 Booth foto sederhana untuk kamu dan pasangan, meski sedang berjauhan.
 
