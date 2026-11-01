@@ -1,79 +1,1124 @@
 (() => {
-  'use strict';
+  "use strict";
   const $ = (id) => document.getElementById(id);
   const designs = [
-    ['petal','Kelopak','#d98791','#fff1f0','#69464b','♡'],['bunny','Kelinci','#dc9fac','#fff2f3','#664b50','૮₍ ˶ᵔ ᵕ ᵔ˶ ₎ა'],['kitty','Kucing','#aa91ad','#f2eaf4','#55465c','(=^･ω･^=)'],['berry','Stroberi','#d86f79','#fff0ec','#683e41','🍓'],['cloud','Awan','#89a6c0','#edf5fc','#455c71','☁'],['tulip','Tulip','#cc8797','#fff1ee','#684650','🌷'],['paw','Jejak Kaki','#bb977d','#f6eee4','#635141','🐾'],['bow','Pita','#cb8ba1','#fff0f4','#654454','🎀'],['daisy','Aster','#9daa78','#f2f3e5','#535d40','✿'],['star','Cahaya Bintang','#c5a454','#f8f1dc','#665832','✦'],['peach','Persik','#dc9b78','#fff0e3','#6b4937','♡'],['lilac','Lilak','#aa98c4','#f3effa','#514866','✧'],['cherry','Ceri','#bf6570','#fae7e8','#693d46','♥'],['ocean','Laut','#6d9eaa','#e6f2f3','#3e5c62','☼'],['garden','Taman','#78936d','#ecf1e4','#46573f','❀'],['retro','Retro','#b97f62','#f3e4ce','#624737','✿'],['mono','Hitam Putih','#77736d','#eeeae3','#504d48','♡'],['night','Bulan','#6d6d96','#e9e8f5','#48475f','☾'],
-    ['strawberry','Stroberi Manis','#dd7180','#fff0f1','#713c4a','♡'],['matcha','Matcha','#8b9b70','#eef2df','#48563d','✿'],['soda','Soda','#78aeba','#e7f7f8','#3d626e','✦'],['butter','Kuning Mentega','#d5ad5c','#fff5d9','#6b5732','☼'],['lavender','Lavender','#9f8dbb','#f2edfa','#574c69','✧'],['picnic','Piknik','#c57772','#fff1e8','#634444','♥'],['milk','Susu Stroberi','#d890a7','#fff0f5','#674650','♡'],['moss','Lumut','#7f9072','#edf0e6','#495343','❀'],['twilight','Senja','#827ca8','#efedf8','#4c4967','☾'],['cocoa','Kakao','#ac8069','#f4e9df','#594338','♡'],['lemon','Lemon','#c4b457','#fbf7d9','#625d35','✦'],['cloudy','Awan Ceria','#91a8bd','#eff5f8','#4e6071','☁']
-  ].map(([id,name,color,bg,ink,mark])=>({id,name,color,bg,ink,mark}));
-  const frameLooks={petal:'storybook',bunny:'postcard',kitty:'double',berry:'film',cloud:'gingham',tulip:'scallop',paw:'ticket',bow:'ribbon',daisy:'botanical',star:'night',peach:'postcard',lilac:'double',cherry:'film',ocean:'wave',garden:'botanical',retro:'film',mono:'newspaper',night:'night',strawberry:'gingham',matcha:'storybook',soda:'postcard',butter:'ticket',lavender:'scallop',picnic:'gingham',milk:'ribbon',moss:'botanical',twilight:'night',cocoa:'newspaper',lemon:'ticket',cloudy:'wave'};designs.forEach(f=>f.look=frameLooks[f.id]||'storybook');
-  let frame=designs[0],stream=null,front=true,timer=3,room='',role='',channel=null,client=null,roomToken='';
-  let state={shots:{},names:{},caption:'aku + kamu · selalu bersama',stickers:[]}; let latestUrl='';let resultRevision=0;
-  let peer=null,callReady=false,pendingOffer=null,callId='';const pendingIce=new Map();
-  const partnerVideo=document.createElement('video');partnerVideo.id='partnerVideo';partnerVideo.autoplay=true;partnerVideo.muted=true;partnerVideo.playsInline=true;partnerVideo.className='partner-video';$('cameraBox').append(partnerVideo);
-  const partnerEmpty=document.createElement('div');partnerEmpty.id='partnerEmpty';partnerEmpty.className='partner-empty';partnerEmpty.textContent='Kamera pasanganmu tampil di sini';$('cameraBox').append(partnerEmpty);
-  const liveFooter=document.createElement('div');liveFooter.className='live-frame-footer';liveFooter.innerHTML='<input id="liveNameA" maxlength="18" aria-label="Ubah nama pertama di bingkai" value="Kamu" title="Ketuk untuk mengubah nama"><input id="liveCaption" maxlength="48" aria-label="Ubah tulisan di bingkai" value="aku + kamu · selalu bersama" title="Ketuk untuk mengubah tulisan"><input id="liveNameB" maxlength="18" aria-label="Ubah nama kedua di bingkai" value="Pasangan" title="Ketuk untuk mengubah nama">';$('cameraBox').append(liveFooter);
-  const liveCaption=$('liveCaption'),liveNameA=$('liveNameA'),liveNameB=$('liveNameB');
-  const stickerLayer=document.createElement('div');stickerLayer.className='live-sticker-layer';stickerLayer.setAttribute('aria-label','Stiker yang dipasang');$('cameraBox').append(stickerLayer);
-  const stickerTray=$('stickerTray');
-  const stickerChoices=['♡','♥','✿','🌷','🍓','🎀','🐾','☁','✦','✨','🌙','🧸','💌','🫶','🍒','🦋','🌼','☀️','🐰','🐱','🐻','🐼','🐥','🐸','🧁','🍰','🍮','🍪','🍑','🍋','🍬','💗','💕','💫','🌈','🎐'];let selectedSticker='';
-  const liveLabel=document.createElement('div');liveLabel.className='live-frame-label';liveLabel.textContent=frame.mark+'  ♡  '+frame.mark;$('cameraBox').append(liveLabel);
-  const cfg=window.PHOTOBOOTH_CONFIG||{};
-  if(cfg.supabaseUrl&&cfg.supabaseAnonKey&&window.supabase)client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseAnonKey);
+    ["petal", "Kelopak", "#d98791", "#fff1f0", "#69464b", "♡"],
+    ["bunny", "Kelinci", "#dc9fac", "#fff2f3", "#664b50", "૮₍ ˶ᵔ ᵕ ᵔ˶ ₎ა"],
+    ["kitty", "Kucing", "#aa91ad", "#f2eaf4", "#55465c", "(=^･ω･^=)"],
+    ["berry", "Stroberi", "#d86f79", "#fff0ec", "#683e41", "🍓"],
+    ["cloud", "Awan", "#89a6c0", "#edf5fc", "#455c71", "☁"],
+    ["tulip", "Tulip", "#cc8797", "#fff1ee", "#684650", "🌷"],
+    ["paw", "Jejak Kaki", "#bb977d", "#f6eee4", "#635141", "🐾"],
+    ["bow", "Pita", "#cb8ba1", "#fff0f4", "#654454", "🎀"],
+    ["daisy", "Aster", "#9daa78", "#f2f3e5", "#535d40", "✿"],
+    ["star", "Cahaya Bintang", "#c5a454", "#f8f1dc", "#665832", "✦"],
+    ["peach", "Persik", "#dc9b78", "#fff0e3", "#6b4937", "♡"],
+    ["lilac", "Lilak", "#aa98c4", "#f3effa", "#514866", "✧"],
+    ["cherry", "Ceri", "#bf6570", "#fae7e8", "#693d46", "♥"],
+    ["ocean", "Laut", "#6d9eaa", "#e6f2f3", "#3e5c62", "☼"],
+    ["garden", "Taman", "#78936d", "#ecf1e4", "#46573f", "❀"],
+    ["retro", "Retro", "#b97f62", "#f3e4ce", "#624737", "✿"],
+    ["mono", "Hitam Putih", "#77736d", "#eeeae3", "#504d48", "♡"],
+    ["night", "Bulan", "#6d6d96", "#e9e8f5", "#48475f", "☾"],
+    ["strawberry", "Stroberi Manis", "#dd7180", "#fff0f1", "#713c4a", "♡"],
+    ["matcha", "Matcha", "#8b9b70", "#eef2df", "#48563d", "✿"],
+    ["soda", "Soda", "#78aeba", "#e7f7f8", "#3d626e", "✦"],
+    ["butter", "Kuning Mentega", "#d5ad5c", "#fff5d9", "#6b5732", "☼"],
+    ["lavender", "Lavender", "#9f8dbb", "#f2edfa", "#574c69", "✧"],
+    ["picnic", "Piknik", "#c57772", "#fff1e8", "#634444", "♥"],
+    ["milk", "Susu Stroberi", "#d890a7", "#fff0f5", "#674650", "♡"],
+    ["moss", "Lumut", "#7f9072", "#edf0e6", "#495343", "❀"],
+    ["twilight", "Senja", "#827ca8", "#efedf8", "#4c4967", "☾"],
+    ["cocoa", "Kakao", "#ac8069", "#f4e9df", "#594338", "♡"],
+    ["lemon", "Lemon", "#c4b457", "#fbf7d9", "#625d35", "✦"],
+    ["cloudy", "Awan Ceria", "#91a8bd", "#eff5f8", "#4e6071", "☁"],
+  ].map(([id, name, color, bg, ink, mark]) => ({
+    id,
+    name,
+    color,
+    bg,
+    ink,
+    mark,
+  }));
+  const frameLooks = {
+    petal: "storybook",
+    bunny: "postcard",
+    kitty: "double",
+    berry: "film",
+    cloud: "gingham",
+    tulip: "scallop",
+    paw: "ticket",
+    bow: "ribbon",
+    daisy: "botanical",
+    star: "night",
+    peach: "postcard",
+    lilac: "double",
+    cherry: "film",
+    ocean: "wave",
+    garden: "botanical",
+    retro: "film",
+    mono: "newspaper",
+    night: "night",
+    strawberry: "gingham",
+    matcha: "storybook",
+    soda: "postcard",
+    butter: "ticket",
+    lavender: "scallop",
+    picnic: "gingham",
+    milk: "ribbon",
+    moss: "botanical",
+    twilight: "night",
+    cocoa: "newspaper",
+    lemon: "ticket",
+    cloudy: "wave",
+  };
+  designs.forEach((f) => (f.look = frameLooks[f.id] || "storybook"));
+  let frame = designs[0],
+    stream = null,
+    front = true,
+    timer = 3,
+    room = "",
+    role = "",
+    channel = null,
+    client = null,
+    roomToken = "";
+  let state = {
+    shots: {},
+    names: {},
+    caption: "aku + kamu · selalu bersama",
+    stickers: [],
+  };
+  let latestUrl = "";
+  let resultRevision = 0;
+  let peer = null,
+    callReady = false,
+    pendingOffer = null,
+    callId = "";
+  const pendingIce = new Map();
+  const partnerVideo = document.createElement("video");
+  partnerVideo.id = "partnerVideo";
+  partnerVideo.autoplay = true;
+  partnerVideo.muted = true;
+  partnerVideo.playsInline = true;
+  partnerVideo.className = "partner-video";
+  $("cameraBox").append(partnerVideo);
+  const partnerEmpty = document.createElement("div");
+  partnerEmpty.id = "partnerEmpty";
+  partnerEmpty.className = "partner-empty";
+  partnerEmpty.textContent = "Kamera pasanganmu tampil di sini";
+  $("cameraBox").append(partnerEmpty);
+  const liveFooter = document.createElement("div");
+  liveFooter.className = "live-frame-footer";
+  liveFooter.innerHTML =
+    '<input id="liveNameA" maxlength="18" aria-label="Ubah nama pertama di bingkai" value="Kamu" title="Ketuk untuk mengubah nama"><input id="liveCaption" maxlength="48" aria-label="Ubah tulisan di bingkai" value="aku + kamu · selalu bersama" title="Ketuk untuk mengubah tulisan"><input id="liveNameB" maxlength="18" aria-label="Ubah nama kedua di bingkai" value="Pasangan" title="Ketuk untuk mengubah nama">';
+  $("cameraBox").append(liveFooter);
+  const liveCaption = $("liveCaption"),
+    liveNameA = $("liveNameA"),
+    liveNameB = $("liveNameB");
+  const stickerLayer = document.createElement("div");
+  stickerLayer.className = "live-sticker-layer";
+  stickerLayer.setAttribute("aria-label", "Stiker yang dipasang");
+  $("cameraBox").append(stickerLayer);
+  const stickerTray = $("stickerTray");
+  const stickerChoices = [
+    "♡",
+    "♥",
+    "✿",
+    "🌷",
+    "🍓",
+    "🎀",
+    "🐾",
+    "☁",
+    "✦",
+    "✨",
+    "🌙",
+    "🧸",
+    "💌",
+    "🫶",
+    "🍒",
+    "🦋",
+    "🌼",
+    "☀️",
+    "🐰",
+    "🐱",
+    "🐻",
+    "🐼",
+    "🐥",
+    "🐸",
+    "🧁",
+    "🍰",
+    "🍮",
+    "🍪",
+    "🍑",
+    "🍋",
+    "🍬",
+    "💗",
+    "💕",
+    "💫",
+    "🌈",
+    "🎐",
+  ];
+  let selectedSticker = "";
+  const liveLabel = document.createElement("div");
+  liveLabel.className = "live-frame-label";
+  liveLabel.textContent = frame.mark + "  ♡  " + frame.mark;
+  $("cameraBox").append(liveLabel);
+  const cfg = window.PHOTOBOOTH_CONFIG || {};
+  if (cfg.supabaseUrl && cfg.supabaseAnonKey && window.supabase)
+    client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
 
-  function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toast.t);el.t=setTimeout(()=>el.classList.remove('show'),3200)}
-  function drawFrames(){const grid=$('frames');$('cameraBox').style.setProperty('--frame-edge',frame.color);$('cameraBox').style.setProperty('--frame-bg',frame.bg);$('cameraBox').style.setProperty('--frame-ink',frame.ink);$('cameraBox').dataset.look=frame.look;liveLabel.textContent=frame.mark+'  ♡  '+frame.mark;grid.replaceChildren();designs.forEach(f=>{const b=document.createElement('button');b.className='frame'+(frame.id===f.id?' selected':'');b.type='button';b.setAttribute('aria-label',`Bingkai ${f.name}`);const preview=document.createElement('canvas');preview.className='frame-art frame-preview-canvas';preview.width=72;preview.height=150;const previewContext=preview.getContext('2d');previewContext.scale(.1,.1);makeCard(previewContext,720,1500,f,'');b.append(preview);const name=document.createElement('span');name.textContent=f.name;b.append(name);b.onclick=()=>{frame=f;state.frameId=f.id;drawFrames();if(room){saveState();send({type:'frame',id:f.id})}renderResult()};grid.append(b)})}
-  function drawStickerPalette(){const box=stickerTray.querySelector('.sticker-options');box.replaceChildren();stickerChoices.forEach(symbol=>{const b=document.createElement('button');b.type='button';b.className='sticker-choice';b.textContent=symbol;b.setAttribute('aria-label',`Tambahkan stiker ${symbol}`);b.onclick=()=>addSticker(symbol);box.append(b)})}
-  function syncStickers(){drawStickers();if(room){state.stickers=state.stickers||[];saveState();send({type:'stickers',stickers:state.stickers})}renderResult()}
-  function drawStickers(){stickerLayer.replaceChildren();(state.stickers||[]).forEach(item=>{const el=document.createElement('button');el.type='button';el.className='placed-sticker'+(selectedSticker===item.id?' is-selected':'');el.textContent=item.symbol;el.setAttribute('aria-label',`${item.symbol} stiker, seret untuk memindahkan`);el.style.left=`${item.x*100}%`;el.style.top=`${item.y*100}%`;el.onpointerdown=e=>{e.preventDefault();selectedSticker=item.id;el.classList.add('is-selected');el.setPointerCapture(e.pointerId);const move=ev=>{const r=$('cameraBox').getBoundingClientRect();item.x=Math.max(.04,Math.min(.96,(ev.clientX-r.left)/r.width));item.y=Math.max(.04,Math.min(.96,(ev.clientY-r.top)/r.height));el.style.left=`${item.x*100}%`;el.style.top=`${item.y*100}%`};const up=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);syncStickers()};el.addEventListener('pointermove',move);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up)};el.onclick=()=>{selectedSticker=item.id;stickerLayer.querySelectorAll('.placed-sticker').forEach(s=>s.classList.toggle('is-selected',s===el));stickerTray.querySelector('.sticker-remove').disabled=false};stickerLayer.append(el)});stickerTray.querySelector('.sticker-remove').disabled=!(state.stickers||[]).some(s=>s.id===selectedSticker)}
-  function addSticker(symbol){const rect=$('cameraBox').getBoundingClientRect(),n=(state.stickers||[]).length;state.stickers=state.stickers||[];const item={id:`${Date.now()}-${Math.random().toString(36).slice(2,7)}`,symbol,x:Math.max(.12,Math.min(.88,.35+(n%4)*.1)),y:Math.max(.1,Math.min(.88,.35+Math.floor(n/4)*.1))};selectedSticker=item.id;state.stickers.push(item);syncStickers();if(!rect.width)toast('Stiker ditambahkan — seret ke bingkai untuk mengaturnya')}
-  stickerTray.querySelector('.sticker-remove').onclick=()=>{state.stickers=(state.stickers||[]).filter(s=>s.id!==selectedSticker);selectedSticker='';syncStickers()};drawStickerPalette();
+  function toast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toast.t);
+    el.t = setTimeout(() => el.classList.remove("show"), 3200);
+  }
+  function drawFrames() {
+    const grid = $("frames");
+    $("cameraBox").style.setProperty("--frame-edge", frame.color);
+    $("cameraBox").style.setProperty("--frame-bg", frame.bg);
+    $("cameraBox").style.setProperty("--frame-ink", frame.ink);
+    $("cameraBox").dataset.look = frame.look;
+    liveLabel.textContent = frame.mark + "  ♡  " + frame.mark;
+    grid.replaceChildren();
+    designs.forEach((f) => {
+      const b = document.createElement("button");
+      b.className = "frame" + (frame.id === f.id ? " selected" : "");
+      b.type = "button";
+      b.setAttribute("aria-label", `Bingkai ${f.name}`);
+      const preview = document.createElement("canvas");
+      preview.className = "frame-art frame-preview-canvas";
+      preview.width = 72;
+      preview.height = 150;
+      const previewContext = preview.getContext("2d");
+      previewContext.scale(0.1, 0.1);
+      makeCard(previewContext, 720, 1500, f, "");
+      b.append(preview);
+      const name = document.createElement("span");
+      name.textContent = f.name;
+      b.append(name);
+      b.onclick = () => {
+        frame = f;
+        state.frameId = f.id;
+        drawFrames();
+        if (room) {
+          saveState();
+          send({ type: "frame", id: f.id });
+        }
+        renderResult();
+      };
+      grid.append(b);
+    });
+  }
+  function drawStickerPalette() {
+    const box = stickerTray.querySelector(".sticker-options");
+    box.replaceChildren();
+    stickerChoices.forEach((symbol) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "sticker-choice";
+      b.textContent = symbol;
+      b.setAttribute("aria-label", `Tambahkan stiker ${symbol}`);
+      b.onclick = () => addSticker(symbol);
+      box.append(b);
+    });
+  }
+  function syncStickers() {
+    drawStickers();
+    if (room) {
+      state.stickers = state.stickers || [];
+      saveState();
+      send({ type: "stickers", stickers: state.stickers });
+    }
+    renderResult();
+  }
+  function drawStickers() {
+    stickerLayer.replaceChildren();
+    (state.stickers || []).forEach((item) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className =
+        "placed-sticker" + (selectedSticker === item.id ? " is-selected" : "");
+      el.textContent = item.symbol;
+      el.setAttribute(
+        "aria-label",
+        `${item.symbol} stiker, seret untuk memindahkan`,
+      );
+      el.style.left = `${item.x * 100}%`;
+      el.style.top = `${item.y * 100}%`;
+      el.onpointerdown = (e) => {
+        e.preventDefault();
+        selectedSticker = item.id;
+        el.classList.add("is-selected");
+        el.setPointerCapture(e.pointerId);
+        const move = (ev) => {
+          const r = $("cameraBox").getBoundingClientRect();
+          item.x = Math.max(
+            0.04,
+            Math.min(0.96, (ev.clientX - r.left) / r.width),
+          );
+          item.y = Math.max(
+            0.04,
+            Math.min(0.96, (ev.clientY - r.top) / r.height),
+          );
+          el.style.left = `${item.x * 100}%`;
+          el.style.top = `${item.y * 100}%`;
+        };
+        const up = () => {
+          el.removeEventListener("pointermove", move);
+          el.removeEventListener("pointerup", up);
+          el.removeEventListener("pointercancel", up);
+          syncStickers();
+        };
+        el.addEventListener("pointermove", move);
+        el.addEventListener("pointerup", up);
+        el.addEventListener("pointercancel", up);
+      };
+      el.onclick = () => {
+        selectedSticker = item.id;
+        stickerLayer
+          .querySelectorAll(".placed-sticker")
+          .forEach((s) => s.classList.toggle("is-selected", s === el));
+        stickerTray.querySelector(".sticker-remove").disabled = false;
+      };
+      stickerLayer.append(el);
+    });
+    stickerTray.querySelector(".sticker-remove").disabled = !(
+      state.stickers || []
+    ).some((s) => s.id === selectedSticker);
+  }
+  function addSticker(symbol) {
+    const rect = $("cameraBox").getBoundingClientRect(),
+      n = (state.stickers || []).length;
+    state.stickers = state.stickers || [];
+    const item = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      symbol,
+      x: Math.max(0.12, Math.min(0.88, 0.35 + (n % 4) * 0.1)),
+      y: Math.max(0.1, Math.min(0.88, 0.35 + Math.floor(n / 4) * 0.1)),
+    };
+    selectedSticker = item.id;
+    state.stickers.push(item);
+    syncStickers();
+    if (!rect.width)
+      toast("Stiker ditambahkan — seret ke bingkai untuk mengaturnya");
+  }
+  stickerTray.querySelector(".sticker-remove").onclick = () => {
+    state.stickers = (state.stickers || []).filter(
+      (s) => s.id !== selectedSticker,
+    );
+    selectedSticker = "";
+    syncStickers();
+  };
+  drawStickerPalette();
   drawFrames();
-  function setCameraReady(ready){$('take').disabled=!ready||!!(room&&state.shots[role]);$('cameraButton').textContent=ready?'Kamera siap':'Nyalakan kamera';$('cameraButton').classList.toggle('is-on',ready)}
-  async function startCamera(){const btn=$('cameraButton');btn.disabled=true;btn.textContent='Mengizinkan kamera…';try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('secure');stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:front?'user':'environment'}});$('video').srcObject=stream;await $('video').play();$('cameraBox').classList.add('live');setCameraReady(true);if(peer&&stream.getVideoTracks()[0]){const sender=peer.getSenders().find(s=>s.track?.kind==='video');if(sender)await sender.replaceTrack(stream.getVideoTracks()[0])}if(room){send({type:'hello',role,name:$('name').value.trim()||'Kamu'});if(role==='a')startCall();else if(pendingOffer){const offer=pendingOffer;pendingOffer=null;answerCall(offer.description,offer.id)}}}catch(err){btn.disabled=false;btn.textContent='Coba nyalakan kamera lagi';if(err.message==='secure')toast('Buka situs ini melalui HTTPS atau localhost agar kamera bisa digunakan.');else if(err.name==='NotAllowedError'||err.name==='PermissionDeniedError')toast('Izin kamera ditolak. Izinkan akses kamera di pengaturan browser, lalu coba lagi.');else if(err.name==='NotFoundError')toast('Kamera tidak ditemukan di perangkat ini.');else toast('Kamera tidak dapat dibuka. Periksa izin browser dan tutup aplikasi kamera lain.')}}
-  $('cameraButton').onclick=startCamera;
-  $('flip').onclick=async()=>{front=!front;if(!stream){toast(front?'Kamera depan dipilih':'Kamera belakang dipilih');return}stream.getTracks().forEach(t=>t.stop());stream=null;await startCamera()};
-  $('timer').onclick=()=>{timer=timer===3?5:timer===5?10:3;$('timer').textContent=`${timer} dtk`;};
+  function setCameraReady(ready) {
+    $("take").disabled = !ready || !!(room && state.shots[role]);
+    $("cameraButton").textContent = ready ? "Kamera siap" : "Nyalakan kamera";
+    $("cameraButton").classList.toggle("is-on", ready);
+  }
+  async function startCamera() {
+    const btn = $("cameraButton");
+    btn.disabled = true;
+    btn.textContent = "Mengizinkan kamera…";
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error("secure");
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: front ? "user" : "environment" },
+      });
+      $("video").srcObject = stream;
+      await $("video").play();
+      $("cameraBox").classList.add("live");
+      setCameraReady(true);
+      if (peer && stream.getVideoTracks()[0]) {
+        const sender = peer.getSenders().find((s) => s.track?.kind === "video");
+        if (sender) await sender.replaceTrack(stream.getVideoTracks()[0]);
+      }
+      if (room) {
+        send({ type: "hello", role, name: $("name").value.trim() || "Kamu" });
+        if (role === "a") startCall();
+        else if (pendingOffer) {
+          const offer = pendingOffer;
+          pendingOffer = null;
+          answerCall(offer.description, offer.id);
+        }
+      }
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = "Coba nyalakan kamera lagi";
+      if (err.message === "secure")
+        toast(
+          "Buka situs ini melalui HTTPS atau localhost agar kamera bisa digunakan.",
+        );
+      else if (
+        err.name === "NotAllowedError" ||
+        err.name === "PermissionDeniedError"
+      )
+        toast(
+          "Izin kamera ditolak. Izinkan akses kamera di pengaturan browser, lalu coba lagi.",
+        );
+      else if (err.name === "NotFoundError")
+        toast("Kamera tidak ditemukan di perangkat ini.");
+      else
+        toast(
+          "Kamera tidak dapat dibuka. Periksa izin browser dan tutup aplikasi kamera lain.",
+        );
+    }
+  }
+  $("cameraButton").onclick = startCamera;
+  $("flip").onclick = async () => {
+    front = !front;
+    if (!stream) {
+      toast(front ? "Kamera depan dipilih" : "Kamera belakang dipilih");
+      return;
+    }
+    stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+    await startCamera();
+  };
+  $("timer").onclick = () => {
+    timer = timer === 3 ? 5 : timer === 5 ? 10 : 3;
+    $("timer").textContent = `${timer} dtk`;
+  };
 
-  async function saveState(){if(room&&roomToken){const {data,error}=await client.rpc('update_booth_room',{p_code:room,p_token:roomToken,p_state:state});if(error||data!==true)toast('Ruang tidak dapat disimpan. Gabung kembali dengan kodenya.')}}
-  function adoptRoomState(value){const incoming=value&&typeof value==='object'?value:{};state={...incoming,shots:incoming.shots||{},names:incoming.names||{},caption:incoming.caption??liveCaption.value,stickers:Array.isArray(incoming.stickers)?incoming.stickers:[]};liveCaption.value=state.caption;frame=designs.find(f=>f.id===state.frameId)||frame;drawFrames();drawStickers()}
-  async function send(payload){if(!channel)return;try{await channel.send({type:'broadcast',event:'booth',payload:{...payload,from:role}})}catch{toast('Koneksi ruang terputus. Periksa internetmu.')}}
-  function receive(payload){const p=payload?.payload;if(!p||p.from===role)return;if(p.type==='hello'){if(!state.names[p.role])state.names[p.role]=p.name;updateRoom();send({type:'state',state});if(stream&&role==='a'){if(!peer)startCall();else if(!peer.remoteDescription||['failed','disconnected','closed'].includes(peer.connectionState))startCall(true)}}else if(p.type==='state'&&p.state){state={...p.state,shots:p.state.shots||{},names:p.state.names||{},caption:p.state.caption??liveCaption.value,stickers:p.state.stickers||[]};liveCaption.value=state.caption;frame=designs.find(f=>f.id===state.frameId)||frame;drawFrames();drawStickers();updateRoom();renderResult()}else if(p.type==='shot'&&p.role&&p.data){state.shots[p.role]=p.data;state.names[p.role]=p.name||'Kamu';updateRoom();renderResult()}else if(p.type==='retake'&&p.role&&p.role!==role){delete state.shots[p.role];updateRoom();renderResult()}else if(p.type==='frame'){frame=designs.find(f=>f.id===p.id)||frame;state.frameId=frame.id;drawFrames();renderResult()}else if(p.type==='caption'){state.caption=p.text;liveCaption.value=p.text;renderResult()}else if(p.type==='names'&&p.names){state.names={...state.names,...p.names};updateRoom();renderResult()}else if(p.type==='stickers'){state.stickers=Array.isArray(p.stickers)?p.stickers:[];drawStickers();renderResult()}else if(p.type==='rtc-offer')answerCall(p.description,p.id);else if(p.type==='rtc-answer'&&peer&&p.id===callId){const pc=peer;pc.setRemoteDescription(p.description).then(()=>flushIceCandidates(p.id,pc)).catch(()=>toast('Video langsung gagal disiapkan. Coba gabung kembali ke ruang.'))}else if(p.type==='rtc-ice'&&p.candidate)queueIceCandidate(p.id,p.candidate);}
-  function createPeerConnection(id){callId=id;callReady=true;pendingIce.set(id,pendingIce.get(id)||[]);const pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun.cloudflare.com:3478'}]});peer=pc;if(stream)stream.getTracks().forEach(track=>pc.addTrack(track,stream));pc.ontrack=e=>{partnerVideo.srcObject=e.streams?.[0]||new MediaStream([e.track]);partnerVideo.play().catch(()=>{});partnerEmpty.hidden=true};pc.onicecandidate=e=>{if(e.candidate&&peer===pc)send({type:'rtc-ice',id,candidate:e.candidate.toJSON?.()||e.candidate})};pc.onconnectionstatechange=()=>{if(peer!==pc)return;if(pc.connectionState==='connected'){partnerEmpty.hidden=true;toast('Kamera kalian terhubung langsung ♡')}else if(pc.connectionState==='connecting'){partnerEmpty.textContent='Menghubungkan kamera pasanganmu…';partnerEmpty.hidden=false}else if(pc.connectionState==='failed'){partnerEmpty.textContent='Video langsung tidak dapat terhubung melalui jaringan ini.';partnerEmpty.hidden=false;toast('Jaringan ini memerlukan relay TURN untuk video langsung. Berbagi foto tetap bisa digunakan.')}else if(pc.connectionState==='disconnected'){partnerEmpty.textContent='Menghubungkan ulang kamera langsung…';partnerEmpty.hidden=false}};return pc}
-  async function flushIceCandidates(id=callId,pc=peer){if(!pc||id!==callId||peer!==pc||!pc.remoteDescription)return;const queued=pendingIce.get(id)||[];pendingIce.set(id,[]);for(const candidate of queued){try{await pc.addIceCandidate(candidate)}catch(error){console.warn('Skipping stale ICE candidate',error)}}}
-  async function queueIceCandidate(id,candidate){if(!id)return;if(!peer||id!==callId||!peer.remoteDescription){const queue=pendingIce.get(id)||[];queue.push(candidate);pendingIce.set(id,queue);return}try{await peer.addIceCandidate(candidate)}catch(error){console.warn('Could not add ICE candidate',error)}}
-  async function startCall(force=false){if(!room||!stream||role!=='a')return;if(peer?.connectionState==='connected')return;if(peer&&!force)return;if(force&&peer){peer.close();peer=null;partnerVideo.srcObject=null;pendingIce.clear()}const id=`${room}-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,pc=createPeerConnection(id);partnerEmpty.textContent='Menunggu kamera pasanganmu…';partnerEmpty.hidden=false;try{const offer=await pc.createOffer();await pc.setLocalDescription(offer);if(peer!==pc)return;await send({type:'rtc-offer',id,description:pc.localDescription})}catch(error){console.error('Live camera offer failed',error);toast('Kamera langsung gagal dimulai. Periksa izin kamera, lalu coba lagi.')}}
-  async function answerCall(description,id){if(!id)return;if(!stream){pendingOffer={description,id};partnerEmpty.textContent='Pasanganmu sudah siap — nyalakan kameramu.';partnerEmpty.hidden=false;toast('Nyalakan kamera untuk memulai video langsung.');return}if(peer&&callId===id&&peer.remoteDescription)return;if(peer&&callId!==id){peer.close();peer=null;partnerVideo.srcObject=null;for(const queuedId of pendingIce.keys())if(queuedId!==id)pendingIce.delete(queuedId)}const pc=peer&&callId===id?peer:createPeerConnection(id);try{await pc.setRemoteDescription(description);await flushIceCandidates(id,pc);const answer=await pc.createAnswer();await pc.setLocalDescription(answer);if(peer!==pc)return;await send({type:'rtc-answer',id,description:pc.localDescription})}catch(error){console.error('Live camera answer failed',error);toast('Kamera tidak dapat terhubung. Coba gabung kembali ke ruang.')}}
-  function subscribeRoom(){channel=client.channel(`dekat-room-${room}`,{config:{broadcast:{self:false}}});channel.on('broadcast',{event:'booth'},receive).subscribe(status=>{if(status==='SUBSCRIBED'){toast('Terhubung ke ruang');send({type:'hello',role,name:$('name').value.trim()||'Kamu'});send({type:'state',state})}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')toast('Tidak dapat terhubung ke ruang. Periksa kode dan internetmu.')})}
-  function updateRoom(){const partner=role==='a'?'b':'a';$('partner').textContent=state.names[partner]?`${state.names[partner]} bergabung`:room?'Bagikan kode 6 digit ini':'Mode sendiri · siap';$('roomCode').textContent=room;$('take').disabled=!stream||!!(room&&state.shots[role]);$('roomForm').hidden=!!room;$('roomInfo').hidden=!room;$('flowHint').textContent=room?(state.shots[role]?'Fotomu sudah masuk ke strip.':'Ambil fotomu'):'Ambil foto';liveNameA.value=state.names[room?'a':'solo']??$('name').value??'Kamu';liveNameB.value=state.names[room?'b':'partner']??'Pasangan';if(!room||partnerVideo.srcObject)partnerEmpty.hidden=true;else partnerEmpty.hidden=false}
-  $('create').onclick=async()=>{if(!client){toast('Layanan ruang belum diatur.');return}const name=$('name').value.trim()||'Kamu';let result;for(let i=0;i<5;i++){const code=String(Math.floor(100000+Math.random()*900000));result=await client.rpc('create_booth_room',{p_code:code,p_name:name});if(!result.error){room=code;break}if(!/duplicate|unique/i.test(result.error.message)){toast(`Gagal membuat ruang: ${result.error.message}`);return}}if(!room){toast('Ruang gagal dibuat. Coba lagi.');return}role='a';roomToken=result.data.token;adoptRoomState(result.data.state);state.names.a=name;state.frameId=frame.id;await saveState();updateRoom();subscribeRoom()};
-  $('join').onclick=async()=>{if(!client){toast('Layanan ruang belum diatur.');return}const code=$('joinCode').value.trim();if(!/^\d{6}$/.test(code)){toast('Masukkan kode ruang 6 digit.');return}const result=await client.rpc('join_booth_room',{p_code:code,p_name:$('name').value.trim()||'Kamu'});if(result.error){toast(result.error.message.includes('room not found')?'Ruang tidak ditemukan. Periksa kodenya.':'Tidak dapat bergabung ke ruang. Coba lagi.');return}room=code;role='b';roomToken=result.data.token;adoptRoomState(result.data.state);state.names.b=$('name').value.trim()||'Kamu';updateRoom();subscribeRoom()};
-  $('roomCode').onclick=async()=>{try{await navigator.clipboard.writeText(room);toast('Kode ruang disalin.')}catch{toast(`Bagikan kode ruang ${room}`)}};
-  $('leave').onclick=()=>{if(channel)client.removeChannel(channel);channel=null;peer?.close();peer=null;callReady=false;callId='';pendingIce.clear();pendingOffer=null;partnerVideo.srcObject=null;partnerEmpty.textContent='Kamera pasanganmu tampil di sini';partnerEmpty.hidden=false;room='';role='';state={shots:{},names:{},caption:liveCaption.value,stickers:state.stickers||[]};drawStickers();updateRoom();renderResult()};
+  async function saveState() {
+    if (room && roomToken) {
+      const { data, error } = await client.rpc("update_booth_room", {
+        p_code: room,
+        p_token: roomToken,
+        p_state: state,
+      });
+      if (error || data !== true)
+        toast("Ruang tidak dapat disimpan. Gabung kembali dengan kodenya.");
+    }
+  }
+  function adoptRoomState(value) {
+    const incoming = value && typeof value === "object" ? value : {};
+    state = {
+      ...incoming,
+      shots: incoming.shots || {},
+      names: incoming.names || {},
+      caption: incoming.caption ?? liveCaption.value,
+      stickers: Array.isArray(incoming.stickers) ? incoming.stickers : [],
+    };
+    liveCaption.value = state.caption;
+    frame = designs.find((f) => f.id === state.frameId) || frame;
+    drawFrames();
+    drawStickers();
+  }
+  async function send(payload) {
+    if (!channel) return;
+    try {
+      await channel.send({
+        type: "broadcast",
+        event: "booth",
+        payload: { ...payload, from: role },
+      });
+    } catch {
+      toast("Koneksi ruang terputus. Periksa internetmu.");
+    }
+  }
+  function receive(payload) {
+    const p = payload?.payload;
+    if (!p || p.from === role) return;
+    if (p.type === "hello") {
+      if (!state.names[p.role]) state.names[p.role] = p.name;
+      updateRoom();
+      send({ type: "state", state });
+      if (stream && role === "a") {
+        if (!peer) startCall();
+        else if (
+          !peer.remoteDescription ||
+          ["failed", "disconnected", "closed"].includes(peer.connectionState)
+        )
+          startCall(true);
+      }
+    } else if (p.type === "state" && p.state) {
+      state = {
+        ...p.state,
+        shots: p.state.shots || {},
+        names: p.state.names || {},
+        caption: p.state.caption ?? liveCaption.value,
+        stickers: p.state.stickers || [],
+      };
+      liveCaption.value = state.caption;
+      frame = designs.find((f) => f.id === state.frameId) || frame;
+      drawFrames();
+      drawStickers();
+      updateRoom();
+      renderResult();
+    } else if (p.type === "shot" && p.role && p.data) {
+      state.shots[p.role] = p.data;
+      state.names[p.role] = p.name || "Kamu";
+      updateRoom();
+      renderResult();
+    } else if (p.type === "retake" && p.role && p.role !== role) {
+      delete state.shots[p.role];
+      updateRoom();
+      renderResult();
+    } else if (p.type === "frame") {
+      frame = designs.find((f) => f.id === p.id) || frame;
+      state.frameId = frame.id;
+      drawFrames();
+      renderResult();
+    } else if (p.type === "caption") {
+      state.caption = p.text;
+      liveCaption.value = p.text;
+      renderResult();
+    } else if (p.type === "names" && p.names) {
+      state.names = { ...state.names, ...p.names };
+      updateRoom();
+      renderResult();
+    } else if (p.type === "stickers") {
+      state.stickers = Array.isArray(p.stickers) ? p.stickers : [];
+      drawStickers();
+      renderResult();
+    } else if (p.type === "rtc-offer") answerCall(p.description, p.id);
+    else if (p.type === "rtc-answer" && peer && p.id === callId) {
+      const pc = peer;
+      pc.setRemoteDescription(p.description)
+        .then(() => flushIceCandidates(p.id, pc))
+        .catch(() =>
+          toast(
+            "Video langsung gagal disiapkan. Coba gabung kembali ke ruang.",
+          ),
+        );
+    } else if (p.type === "rtc-ice" && p.candidate)
+      queueIceCandidate(p.id, p.candidate);
+  }
+  function createPeerConnection(id) {
+    callId = id;
+    callReady = true;
+    pendingIce.set(id, pendingIce.get(id) || []);
+    const pc = new RTCPeerConnection({
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun.cloudflare.com:3478" },
+      ],
+    });
+    peer = pc;
+    if (stream)
+      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+    pc.ontrack = (e) => {
+      partnerVideo.srcObject = e.streams?.[0] || new MediaStream([e.track]);
+      partnerVideo.play().catch(() => {});
+      partnerEmpty.hidden = true;
+    };
+    pc.onicecandidate = (e) => {
+      if (e.candidate && peer === pc)
+        send({
+          type: "rtc-ice",
+          id,
+          candidate: e.candidate.toJSON?.() || e.candidate,
+        });
+    };
+    pc.onconnectionstatechange = () => {
+      if (peer !== pc) return;
+      if (pc.connectionState === "connected") {
+        partnerEmpty.hidden = true;
+        toast("Kamera kalian terhubung langsung ♡");
+      } else if (pc.connectionState === "connecting") {
+        partnerEmpty.textContent = "Menghubungkan kamera pasanganmu…";
+        partnerEmpty.hidden = false;
+      } else if (pc.connectionState === "failed") {
+        partnerEmpty.textContent =
+          "Video langsung tidak dapat terhubung melalui jaringan ini.";
+        partnerEmpty.hidden = false;
+        toast(
+          "Jaringan ini memerlukan relay TURN untuk video langsung. Berbagi foto tetap bisa digunakan.",
+        );
+      } else if (pc.connectionState === "disconnected") {
+        partnerEmpty.textContent = "Menghubungkan ulang kamera langsung…";
+        partnerEmpty.hidden = false;
+      }
+    };
+    return pc;
+  }
+  async function flushIceCandidates(id = callId, pc = peer) {
+    if (!pc || id !== callId || peer !== pc || !pc.remoteDescription) return;
+    const queued = pendingIce.get(id) || [];
+    pendingIce.set(id, []);
+    for (const candidate of queued) {
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (error) {
+        console.warn("Skipping stale ICE candidate", error);
+      }
+    }
+  }
+  async function queueIceCandidate(id, candidate) {
+    if (!id) return;
+    if (!peer || id !== callId || !peer.remoteDescription) {
+      const queue = pendingIce.get(id) || [];
+      queue.push(candidate);
+      pendingIce.set(id, queue);
+      return;
+    }
+    try {
+      await peer.addIceCandidate(candidate);
+    } catch (error) {
+      console.warn("Could not add ICE candidate", error);
+    }
+  }
+  async function startCall(force = false) {
+    if (!room || !stream || role !== "a") return;
+    if (peer?.connectionState === "connected") return;
+    if (peer && !force) return;
+    if (force && peer) {
+      peer.close();
+      peer = null;
+      partnerVideo.srcObject = null;
+      pendingIce.clear();
+    }
+    const id = `${room}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      pc = createPeerConnection(id);
+    partnerEmpty.textContent = "Menunggu kamera pasanganmu…";
+    partnerEmpty.hidden = false;
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      if (peer !== pc) return;
+      await send({ type: "rtc-offer", id, description: pc.localDescription });
+    } catch (error) {
+      console.error("Live camera offer failed", error);
+      toast(
+        "Kamera langsung gagal dimulai. Periksa izin kamera, lalu coba lagi.",
+      );
+    }
+  }
+  async function answerCall(description, id) {
+    if (!id) return;
+    if (!stream) {
+      pendingOffer = { description, id };
+      partnerEmpty.textContent = "Pasanganmu sudah siap — nyalakan kameramu.";
+      partnerEmpty.hidden = false;
+      toast("Nyalakan kamera untuk memulai video langsung.");
+      return;
+    }
+    if (peer && callId === id && peer.remoteDescription) return;
+    if (peer && callId !== id) {
+      peer.close();
+      peer = null;
+      partnerVideo.srcObject = null;
+      for (const queuedId of pendingIce.keys())
+        if (queuedId !== id) pendingIce.delete(queuedId);
+    }
+    const pc = peer && callId === id ? peer : createPeerConnection(id);
+    try {
+      await pc.setRemoteDescription(description);
+      await flushIceCandidates(id, pc);
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      if (peer !== pc) return;
+      await send({ type: "rtc-answer", id, description: pc.localDescription });
+    } catch (error) {
+      console.error("Live camera answer failed", error);
+      toast("Kamera tidak dapat terhubung. Coba gabung kembali ke ruang.");
+    }
+  }
+  function subscribeRoom() {
+    channel = client.channel(`dekat-room-${room}`, {
+      config: { broadcast: { self: false } },
+    });
+    channel.on("broadcast", { event: "booth" }, receive).subscribe((status) => {
+      if (status === "SUBSCRIBED") {
+        toast("Terhubung ke ruang");
+        send({ type: "hello", role, name: $("name").value.trim() || "Kamu" });
+        send({ type: "state", state });
+      } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT")
+        toast("Tidak dapat terhubung ke ruang. Periksa kode dan internetmu.");
+    });
+  }
+  function updateRoom() {
+    const partner = role === "a" ? "b" : "a";
+    $("partner").textContent = state.names[partner]
+      ? `${state.names[partner]} bergabung`
+      : room
+        ? "Bagikan kode 6 digit ini"
+        : "Mode sendiri · siap";
+    $("roomCode").textContent = room;
+    $("take").disabled = !stream || !!(room && state.shots[role]);
+    $("roomForm").hidden = !!room;
+    $("roomInfo").hidden = !room;
+    $("flowHint").textContent = room
+      ? state.shots[role]
+        ? "Fotomu sudah masuk ke strip."
+        : "Ambil fotomu"
+      : "Ambil foto";
+    liveNameA.value =
+      state.names[room ? "a" : "solo"] ?? $("name").value ?? "Kamu";
+    liveNameB.value = state.names[room ? "b" : "partner"] ?? "Pasangan";
+    if (!room || partnerVideo.srcObject) partnerEmpty.hidden = true;
+    else partnerEmpty.hidden = false;
+  }
+  $("create").onclick = async () => {
+    if (!client) {
+      toast("Layanan ruang belum diatur.");
+      return;
+    }
+    const name = $("name").value.trim() || "Kamu";
+    let result;
+    for (let i = 0; i < 5; i++) {
+      const code = String(Math.floor(100000 + Math.random() * 900000));
+      result = await client.rpc("create_booth_room", {
+        p_code: code,
+        p_name: name,
+      });
+      if (!result.error) {
+        room = code;
+        break;
+      }
+      if (!/duplicate|unique/i.test(result.error.message)) {
+        toast(`Gagal membuat ruang: ${result.error.message}`);
+        return;
+      }
+    }
+    if (!room) {
+      toast("Ruang gagal dibuat. Coba lagi.");
+      return;
+    }
+    role = "a";
+    roomToken = result.data.token;
+    adoptRoomState(result.data.state);
+    state.names.a = name;
+    state.frameId = frame.id;
+    await saveState();
+    updateRoom();
+    subscribeRoom();
+  };
+  $("join").onclick = async () => {
+    if (!client) {
+      toast("Layanan ruang belum diatur.");
+      return;
+    }
+    const code = $("joinCode").value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      toast("Masukkan kode ruang 6 digit.");
+      return;
+    }
+    const result = await client.rpc("join_booth_room", {
+      p_code: code,
+      p_name: $("name").value.trim() || "Kamu",
+    });
+    if (result.error) {
+      toast(
+        result.error.message.includes("room not found")
+          ? "Ruang tidak ditemukan. Periksa kodenya."
+          : "Tidak dapat bergabung ke ruang. Coba lagi.",
+      );
+      return;
+    }
+    room = code;
+    role = "b";
+    roomToken = result.data.token;
+    adoptRoomState(result.data.state);
+    state.names.b = $("name").value.trim() || "Kamu";
+    updateRoom();
+    subscribeRoom();
+  };
+  $("roomCode").onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(room);
+      toast("Kode ruang disalin.");
+    } catch {
+      toast(`Bagikan kode ruang ${room}`);
+    }
+  };
+  $("leave").onclick = () => {
+    if (channel) client.removeChannel(channel);
+    channel = null;
+    peer?.close();
+    peer = null;
+    callReady = false;
+    callId = "";
+    pendingIce.clear();
+    pendingOffer = null;
+    partnerVideo.srcObject = null;
+    partnerEmpty.textContent = "Kamera pasanganmu tampil di sini";
+    partnerEmpty.hidden = false;
+    room = "";
+    role = "";
+    state = {
+      shots: {},
+      names: {},
+      caption: liveCaption.value,
+      stickers: state.stickers || [],
+    };
+    drawStickers();
+    updateRoom();
+    renderResult();
+  };
 
-  function capture(){const v=$('video'),c=$('capture'),ctx=c.getContext('2d');if(!v.videoWidth){toast('Tunggu sampai tampilan kamera muncul, lalu coba lagi.');return null}c.width=v.videoWidth;c.height=v.videoHeight;if(front){ctx.translate(c.width,0);ctx.scale(-1,1)}ctx.drawImage(v,0,0,c.width,c.height);ctx.setTransform(1,0,0,1,0,0);return c.toDataURL('image/jpeg',.78)}
-  $('take').onclick=async()=>{if(!stream){toast('Nyalakan kamera terlebih dahulu.');return}if(room&&state.shots[role])return;const overlay=$('countdown');for(let i=timer;i>0;i--){overlay.textContent=i;overlay.hidden=false;await new Promise(r=>setTimeout(r,700))}overlay.hidden=true;const photo=capture();if(!photo)return;if(room){state.shots[role]=photo;state.names[role]=(role==='a'?liveNameA.value:liveNameB.value).trim()||'Kamu';await saveState();send({type:'shot',role,data:photo,name:state.names[role]});updateRoom()}else{state={...state,shots:{solo:photo},names:{...state.names,solo:liveNameA.value.trim()||'Kamu'}}}renderResult()};
+  function capture() {
+    const v = $("video"),
+      c = $("capture"),
+      ctx = c.getContext("2d");
+    if (!v.videoWidth) {
+      toast("Tunggu sampai tampilan kamera muncul, lalu coba lagi.");
+      return null;
+    }
+    c.width = v.videoWidth;
+    c.height = v.videoHeight;
+    if (front) {
+      ctx.translate(c.width, 0);
+      ctx.scale(-1, 1);
+    }
+    ctx.drawImage(v, 0, 0, c.width, c.height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    return c.toDataURL("image/jpeg", 0.78);
+  }
+  $("take").onclick = async () => {
+    if (!stream) {
+      toast("Nyalakan kamera terlebih dahulu.");
+      return;
+    }
+    if (room && state.shots[role]) return;
+    const overlay = $("countdown");
+    for (let i = timer; i > 0; i--) {
+      overlay.textContent = i;
+      overlay.hidden = false;
+      await new Promise((r) => setTimeout(r, 700));
+    }
+    overlay.hidden = true;
+    const photo = capture();
+    if (!photo) return;
+    if (room) {
+      state.shots[role] = photo;
+      state.names[role] =
+        (role === "a" ? liveNameA.value : liveNameB.value).trim() || "Kamu";
+      await saveState();
+      send({ type: "shot", role, data: photo, name: state.names[role] });
+      updateRoom();
+    } else {
+      state = {
+        ...state,
+        shots: { solo: photo },
+        names: { ...state.names, solo: liveNameA.value.trim() || "Kamu" },
+      };
+    }
+    renderResult();
+  };
 
-  function drawFrameLook(ctx,w,h,f){ctx.save();ctx.strokeStyle=f.ink;ctx.fillStyle=f.ink;ctx.lineWidth=3;ctx.globalAlpha=.28;
-    if(f.look==='double'||f.look==='newspaper'){[34,42,50].forEach((n,i)=>ctx.strokeRect(n,n,w-2*n,h-2*n))}
-    if(f.look==='ticket'){ctx.setLineDash([7,8]);ctx.lineWidth=2;ctx.strokeRect(34,34,w-68,h-68);ctx.setLineDash([]);[h*.43,h*.57].forEach(y=>{ctx.fillStyle=f.bg;ctx.beginPath();ctx.arc(10,y,22,0,Math.PI*2);ctx.fill();ctx.arc(w-10,y,22,0,Math.PI*2);ctx.fill()})}
-    if(f.look==='film'){ctx.globalAlpha=.75;for(let y=112;y<h-100;y+=34){ctx.fillStyle=f.ink;ctx.fillRect(19,y,14,18);ctx.fillRect(w-33,y,14,18)}ctx.globalAlpha=.35;ctx.strokeRect(38,30,w-76,h-60)}
-    if(f.look==='gingham'){ctx.globalAlpha=.15;ctx.lineWidth=16;for(let x=40;x<w;x+=48){ctx.beginPath();ctx.moveTo(x,26);ctx.lineTo(x,h-26);ctx.stroke()}for(let y=40;y<h;y+=48){ctx.beginPath();ctx.moveTo(26,y);ctx.lineTo(w-26,y);ctx.stroke()}}
-    if(f.look==='scallop'){ctx.globalAlpha=.45;for(let x=42;x<w-30;x+=28){[38,h-38].forEach(y=>{ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.stroke()})}for(let y=64;y<h-48;y+=28){[38,w-38].forEach(x=>{ctx.beginPath();ctx.arc(x,y,9,0,Math.PI*2);ctx.stroke()})}}
-    if(f.look==='botanical'){ctx.globalAlpha=.55;for(let y=124;y<h-110;y+=92){[42,w-42].forEach(x=>{for(let a=0;a<5;a++){const angle=a*Math.PI*2/5;ctx.beginPath();ctx.arc(x+Math.cos(angle)*9,y+Math.sin(angle)*9,5,0,Math.PI*2);ctx.fill()}ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill()})}}
-    if(f.look==='night'){ctx.globalAlpha=.8;for(let i=0;i<34;i++){const x=38+((i*89)% (w-76)),y=86+((i*137)%(h-172)),r=i%3===0?4:2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill()}}
-    if(f.look==='wave'){ctx.globalAlpha=.5;ctx.lineWidth=2;for(let y=80;y<h-80;y+=30){[30,w-30].forEach(x=>{ctx.beginPath();ctx.moveTo(x-8,y);ctx.quadraticCurveTo(x+8,y+8,x-8,y+16);ctx.quadraticCurveTo(x-20,y+24,x-8,y+30);ctx.stroke()})}}
-    if(f.look==='postcard'||f.look==='ribbon'){ctx.globalAlpha=.55;ctx.beginPath();ctx.moveTo(w*.25,82);ctx.lineTo(w*.75,82);ctx.stroke();ctx.beginPath();ctx.moveTo(w*.25,h-82);ctx.lineTo(w*.75,h-82);ctx.stroke();if(f.look==='ribbon'){ctx.fillStyle=f.color;ctx.globalAlpha=.9;ctx.beginPath();ctx.moveTo(w/2-74,38);ctx.lineTo(w/2+74,38);ctx.lineTo(w/2+62,64);ctx.lineTo(w/2-62,64);ctx.closePath();ctx.fill()}}
-    ctx.restore()}
-  function makeCard(ctx,w,h,f,caption){ctx.fillStyle=f.bg;ctx.fillRect(0,0,w,h);if(f.look==='gingham'){ctx.save();ctx.globalAlpha=.15;ctx.fillStyle=f.color;for(let x=32;x<w;x+=40)ctx.fillRect(x,24,12,h-48);for(let y=32;y<h;y+=40)ctx.fillRect(24,y,w-48,12);ctx.restore()}ctx.strokeStyle=f.color;ctx.lineWidth=f.look==='film'?24:18;ctx.strokeRect(9,9,w-18,h-18);ctx.strokeStyle=f.ink;ctx.globalAlpha=.38;ctx.lineWidth=2;ctx.strokeRect(25,25,w-50,h-50);ctx.globalAlpha=1;drawFrameLook(ctx,w,h,f);ctx.fillStyle=f.ink;ctx.textAlign='center';ctx.font='30px Georgia';ctx.fillText(`${f.mark}   ${f.mark}   ${f.mark}`,w/2,62);ctx.font='italic 21px Georgia';ctx.fillText(caption,w/2,h-48,w-90)}
-  function makeResult(photos,names){const revision=++resultRevision,c=document.createElement('canvas'),ctx=c.getContext('2d'),w=720,h=photos.length===1?1000:1500;c.width=w;c.height=h;makeCard(ctx,w,h,frame,state.caption??liveCaption.value);const top=photos.length===1?100:95,gap=photos.length===1?0:25,panelH=photos.length===1?790:620,pad=55;let loaded=0;photos.forEach((src,i)=>{const img=new Image();img.onload=()=>{const y=top+i*(panelH+gap);ctx.fillStyle='#fffefa';ctx.fillRect(pad-9,y-9,w-2*pad+18,panelH+18);ctx.save();ctx.beginPath();ctx.rect(pad,y,w-2*pad,panelH-58);ctx.clip();const scale=Math.max((w-2*pad)/img.width,(panelH-58)/img.height),dw=img.width*scale,dh=img.height*scale;ctx.filter=frame.look==='newspaper'?'grayscale(1)':'none';ctx.drawImage(img,pad+(w-2*pad-dw)/2,y+(panelH-58-dh)/2,dw,dh);ctx.restore();ctx.fillStyle=frame.ink;ctx.textAlign='center';ctx.font='italic 23px Georgia';ctx.fillText(names[i]||'Kamu',w/2,y+panelH-22);loaded++;if(loaded===photos.length){if(revision!==resultRevision)return;const previewHeight=$('cameraBox').getBoundingClientRect().height||760;(state.stickers||[]).forEach(s=>{ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${Math.round(h*32/previewHeight)}px sans-serif`;ctx.shadowColor='#fff';ctx.shadowBlur=Math.round(h*2/previewHeight);ctx.fillText(s.symbol,s.x*w,s.y*h);ctx.restore()});latestUrl=c.toDataURL('image/jpeg',.94);$('result').src=latestUrl;$('resultCard').hidden=false}};img.onerror=()=>toast('Foto gagal dibuat. Silakan ambil ulang.');img.src=src})}
-  function renderResult(){const entries=Object.entries(state.shots);if(!entries.length){resultRevision++;$('resultCard').hidden=true;return}if(room&&entries.length<2){makeResult([entries[0][1]],[state.names[entries[0][0]]]);return}if(room){const ordered=['a','b'].filter(k=>state.shots[k]);makeResult(ordered.map(k=>state.shots[k]),ordered.map(k=>state.names[k]))}else makeResult([entries[0][1]],[state.names[entries[0][0]]])}
-  $('download').onclick=()=>{if(!latestUrl)return toast('Ambil foto terlebih dahulu.');const a=document.createElement('a');a.href=latestUrl;a.download='foto-dekat.jpg';document.body.append(a);a.click();a.remove()};
-  $('retake').onclick=async()=>{const key=room?role:'solo';if(room&&!key)return;delete state.shots[key];latestUrl='';resultRevision++;$('resultCard').hidden=true;if(room){await saveState();send({type:'retake',role})}renderResult();updateRoom()};
-  let captionSaveTimer;liveCaption.addEventListener('input',()=>{state.caption=liveCaption.value;if(room){clearTimeout(captionSaveTimer);captionSaveTimer=setTimeout(saveState,400);send({type:'caption',text:liveCaption.value})}renderResult()});
-  let namesSaveTimer;function editFrameName(which){const key=which==='a'?(room?'a':'solo'):(room?'b':'partner'),input=which==='a'?liveNameA:liveNameB;state.names[key]=input.value;if(room){clearTimeout(namesSaveTimer);namesSaveTimer=setTimeout(saveState,400);send({type:'names',names:state.names})}if(which==='a')$('name').value=input.value;updateRoomStatus();renderResult()}
-  function updateRoomStatus(){const partner=role==='a'?'b':'a';$('partner').textContent=state.names[partner]?`${state.names[partner]} bergabung`:room?'Bagikan kode 6 digit ini':'Mode sendiri · siap'}
-  liveNameA.addEventListener('input',()=>editFrameName('a'));liveNameB.addEventListener('input',()=>editFrameName('b'));
-  $('help').onclick=()=>$('guide').hidden=false;$('closeGuide').onclick=()=>$('guide').hidden=true;$('guide').onclick=e=>{if(e.target===$('guide'))$('guide').hidden=true};
-  $('moreFrames').onclick=()=>{$('frames').classList.toggle('expanded');$('moreFrames').textContent=$('frames').classList.contains('expanded')?'Lebih sedikit':'Lainnya'};
+  function drawFrameLook(ctx, w, h, f) {
+    ctx.save();
+    ctx.strokeStyle = f.ink;
+    ctx.fillStyle = f.ink;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.28;
+    if (f.look === "double" || f.look === "newspaper") {
+      [34, 42, 50].forEach((n, i) =>
+        ctx.strokeRect(n, n, w - 2 * n, h - 2 * n),
+      );
+    }
+    if (f.look === "ticket") {
+      ctx.setLineDash([7, 8]);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(34, 34, w - 68, h - 68);
+      ctx.setLineDash([]);
+      [h * 0.43, h * 0.57].forEach((y) => {
+        ctx.fillStyle = f.bg;
+        ctx.beginPath();
+        ctx.arc(10, y, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.arc(w - 10, y, 22, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+    if (f.look === "film") {
+      ctx.globalAlpha = 0.75;
+      for (let y = 112; y < h - 100; y += 34) {
+        ctx.fillStyle = f.ink;
+        ctx.fillRect(19, y, 14, 18);
+        ctx.fillRect(w - 33, y, 14, 18);
+      }
+      ctx.globalAlpha = 0.35;
+      ctx.strokeRect(38, 30, w - 76, h - 60);
+    }
+    if (f.look === "gingham") {
+      ctx.globalAlpha = 0.15;
+      ctx.lineWidth = 16;
+      for (let x = 40; x < w; x += 48) {
+        ctx.beginPath();
+        ctx.moveTo(x, 26);
+        ctx.lineTo(x, h - 26);
+        ctx.stroke();
+      }
+      for (let y = 40; y < h; y += 48) {
+        ctx.beginPath();
+        ctx.moveTo(26, y);
+        ctx.lineTo(w - 26, y);
+        ctx.stroke();
+      }
+    }
+    if (f.look === "scallop") {
+      ctx.globalAlpha = 0.45;
+      for (let x = 42; x < w - 30; x += 28) {
+        [38, h - 38].forEach((y) => {
+          ctx.beginPath();
+          ctx.arc(x, y, 9, 0, Math.PI * 2);
+          ctx.stroke();
+        });
+      }
+      for (let y = 64; y < h - 48; y += 28) {
+        [38, w - 38].forEach((x) => {
+          ctx.beginPath();
+          ctx.arc(x, y, 9, 0, Math.PI * 2);
+          ctx.stroke();
+        });
+      }
+    }
+    if (f.look === "botanical") {
+      ctx.globalAlpha = 0.55;
+      for (let y = 124; y < h - 110; y += 92) {
+        [42, w - 42].forEach((x) => {
+          for (let a = 0; a < 5; a++) {
+            const angle = (a * Math.PI * 2) / 5;
+            ctx.beginPath();
+            ctx.arc(
+              x + Math.cos(angle) * 9,
+              y + Math.sin(angle) * 9,
+              5,
+              0,
+              Math.PI * 2,
+            );
+            ctx.fill();
+          }
+          ctx.beginPath();
+          ctx.arc(x, y, 4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+    }
+    if (f.look === "night") {
+      ctx.globalAlpha = 0.8;
+      for (let i = 0; i < 34; i++) {
+        const x = 38 + ((i * 89) % (w - 76)),
+          y = 86 + ((i * 137) % (h - 172)),
+          r = i % 3 === 0 ? 4 : 2;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    if (f.look === "wave") {
+      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 2;
+      for (let y = 80; y < h - 80; y += 30) {
+        [30, w - 30].forEach((x) => {
+          ctx.beginPath();
+          ctx.moveTo(x - 8, y);
+          ctx.quadraticCurveTo(x + 8, y + 8, x - 8, y + 16);
+          ctx.quadraticCurveTo(x - 20, y + 24, x - 8, y + 30);
+          ctx.stroke();
+        });
+      }
+    }
+    if (f.look === "postcard" || f.look === "ribbon") {
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.25, 82);
+      ctx.lineTo(w * 0.75, 82);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(w * 0.25, h - 82);
+      ctx.lineTo(w * 0.75, h - 82);
+      ctx.stroke();
+      if (f.look === "ribbon") {
+        ctx.fillStyle = f.color;
+        ctx.globalAlpha = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(w / 2 - 74, 38);
+        ctx.lineTo(w / 2 + 74, 38);
+        ctx.lineTo(w / 2 + 62, 64);
+        ctx.lineTo(w / 2 - 62, 64);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+  function makeCard(ctx, w, h, f, caption) {
+    ctx.fillStyle = f.bg;
+    ctx.fillRect(0, 0, w, h);
+    if (f.look === "gingham") {
+      ctx.save();
+      ctx.globalAlpha = 0.15;
+      ctx.fillStyle = f.color;
+      for (let x = 32; x < w; x += 40) ctx.fillRect(x, 24, 12, h - 48);
+      for (let y = 32; y < h; y += 40) ctx.fillRect(24, y, w - 48, 12);
+      ctx.restore();
+    }
+    ctx.strokeStyle = f.color;
+    ctx.lineWidth = f.look === "film" ? 24 : 18;
+    ctx.strokeRect(9, 9, w - 18, h - 18);
+    ctx.strokeStyle = f.ink;
+    ctx.globalAlpha = 0.38;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(25, 25, w - 50, h - 50);
+    ctx.globalAlpha = 1;
+    drawFrameLook(ctx, w, h, f);
+    ctx.fillStyle = f.ink;
+    ctx.textAlign = "center";
+    ctx.font = "30px Georgia";
+    ctx.fillText(`${f.mark}   ${f.mark}   ${f.mark}`, w / 2, 62);
+    ctx.font = "italic 21px Georgia";
+    ctx.fillText(caption, w / 2, h - 48, w - 90);
+  }
+  function makeResult(photos, names) {
+    const revision = ++resultRevision,
+      c = document.createElement("canvas"),
+      ctx = c.getContext("2d"),
+      w = 720,
+      h = photos.length === 1 ? 1000 : 1500;
+    c.width = w;
+    c.height = h;
+    makeCard(ctx, w, h, frame, state.caption ?? liveCaption.value);
+    const top = photos.length === 1 ? 100 : 95,
+      gap = photos.length === 1 ? 0 : 25,
+      panelH = photos.length === 1 ? 790 : 620,
+      pad = 55;
+    let loaded = 0;
+    photos.forEach((src, i) => {
+      const img = new Image();
+      img.onload = () => {
+        const y = top + i * (panelH + gap);
+        ctx.fillStyle = "#fffefa";
+        ctx.fillRect(pad - 9, y - 9, w - 2 * pad + 18, panelH + 18);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(pad, y, w - 2 * pad, panelH - 58);
+        ctx.clip();
+        const scale = Math.max(
+            (w - 2 * pad) / img.width,
+            (panelH - 58) / img.height,
+          ),
+          dw = img.width * scale,
+          dh = img.height * scale;
+        ctx.filter = frame.look === "newspaper" ? "grayscale(1)" : "none";
+        ctx.drawImage(
+          img,
+          pad + (w - 2 * pad - dw) / 2,
+          y + (panelH - 58 - dh) / 2,
+          dw,
+          dh,
+        );
+        ctx.restore();
+        ctx.fillStyle = frame.ink;
+        ctx.textAlign = "center";
+        ctx.font = "italic 23px Georgia";
+        ctx.fillText(names[i] || "Kamu", w / 2, y + panelH - 22);
+        loaded++;
+        if (loaded === photos.length) {
+          if (revision !== resultRevision) return;
+          const previewHeight =
+            $("cameraBox").getBoundingClientRect().height || 760;
+          (state.stickers || []).forEach((s) => {
+            ctx.save();
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = `${Math.round((h * 32) / previewHeight)}px sans-serif`;
+            ctx.shadowColor = "#fff";
+            ctx.shadowBlur = Math.round((h * 2) / previewHeight);
+            ctx.fillText(s.symbol, s.x * w, s.y * h);
+            ctx.restore();
+          });
+          latestUrl = c.toDataURL("image/jpeg", 0.94);
+          $("result").src = latestUrl;
+          $("resultCard").hidden = false;
+        }
+      };
+      img.onerror = () => toast("Foto gagal dibuat. Silakan ambil ulang.");
+      img.src = src;
+    });
+  }
+  function renderResult() {
+    const entries = Object.entries(state.shots);
+    if (!entries.length) {
+      resultRevision++;
+      $("resultCard").hidden = true;
+      return;
+    }
+    if (room && entries.length < 2) {
+      makeResult([entries[0][1]], [state.names[entries[0][0]]]);
+      return;
+    }
+    if (room) {
+      const ordered = ["a", "b"].filter((k) => state.shots[k]);
+      makeResult(
+        ordered.map((k) => state.shots[k]),
+        ordered.map((k) => state.names[k]),
+      );
+    } else makeResult([entries[0][1]], [state.names[entries[0][0]]]);
+  }
+  $("download").onclick = () => {
+    if (!latestUrl) return toast("Ambil foto terlebih dahulu.");
+    const a = document.createElement("a");
+    a.href = latestUrl;
+    a.download = "foto-dekat.jpg";
+    document.body.append(a);
+    a.click();
+    a.remove();
+  };
+  $("retake").onclick = async () => {
+    const key = room ? role : "solo";
+    if (room && !key) return;
+    delete state.shots[key];
+    latestUrl = "";
+    resultRevision++;
+    $("resultCard").hidden = true;
+    if (room) {
+      await saveState();
+      send({ type: "retake", role });
+    }
+    renderResult();
+    updateRoom();
+  };
+  let captionSaveTimer;
+  liveCaption.addEventListener("input", () => {
+    state.caption = liveCaption.value;
+    if (room) {
+      clearTimeout(captionSaveTimer);
+      captionSaveTimer = setTimeout(saveState, 400);
+      send({ type: "caption", text: liveCaption.value });
+    }
+    renderResult();
+  });
+  let namesSaveTimer;
+  function editFrameName(which) {
+    const key = which === "a" ? (room ? "a" : "solo") : room ? "b" : "partner",
+      input = which === "a" ? liveNameA : liveNameB;
+    state.names[key] = input.value;
+    if (room) {
+      clearTimeout(namesSaveTimer);
+      namesSaveTimer = setTimeout(saveState, 400);
+      send({ type: "names", names: state.names });
+    }
+    if (which === "a") $("name").value = input.value;
+    updateRoomStatus();
+    renderResult();
+  }
+  function updateRoomStatus() {
+    const partner = role === "a" ? "b" : "a";
+    $("partner").textContent = state.names[partner]
+      ? `${state.names[partner]} bergabung`
+      : room
+        ? "Bagikan kode 6 digit ini"
+        : "Mode sendiri · siap";
+  }
+  liveNameA.addEventListener("input", () => editFrameName("a"));
+  liveNameB.addEventListener("input", () => editFrameName("b"));
+  $("help").onclick = () => ($("guide").hidden = false);
+  $("closeGuide").onclick = () => ($("guide").hidden = true);
+  $("guide").onclick = (e) => {
+    if (e.target === $("guide")) $("guide").hidden = true;
+  };
+  $("moreFrames").onclick = () => {
+    $("frames").classList.toggle("expanded");
+    $("moreFrames").textContent = $("frames").classList.contains("expanded")
+      ? "Lebih sedikit"
+      : "Lainnya";
+  };
   updateRoom();
 })();
